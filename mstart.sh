@@ -37,16 +37,20 @@ sudo systemctl start docker
 sudo docker run hello-world
 
 # Clone Myriad repository
-cd ~
+echo "Cloning Myriad repository..."
+if [ -d "myriad-api" ]; then
+  sudo rm -rf myriad-api
+fi
 sudo git clone https://github.com/myriadsocial/myriad-api.git
 cd myriad-api
 
-# Download myriadrun.sh script
+echo "Downloading marauder.sh."
 sudo curl -o marauder.sh https://raw.githubusercontent.com/Decentricity/marauder/main/marauder.sh
 
 # Make the myriadrun.sh script executable
 sudo chmod +x marauder.sh
 
+echo "Downloading the uninstaller."
 # Download uninst script
 sudo curl -o myriaduninstall.sh https://raw.githubusercontent.com/Decentricity/marauder/main/myriaduninstall.sh
 
