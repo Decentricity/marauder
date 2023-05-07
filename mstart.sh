@@ -42,13 +42,13 @@ sudo git clone https://github.com/myriadsocial/myriad-api.git
 cd myriad-api
 
 # Download myriadrun.sh script
-sudo curl -o marauder.sh https://github.com/Decentricity/marauder/marauder.sh
+sudo curl -o marauder.sh https://raw.githubusercontent.com/Decentricity/marauder/main/marauder.sh
 
 # Make the myriadrun.sh script executable
 sudo chmod +x marauder.sh
 
 # Download uninst script
-sudo curl -o myriaduninstall.sh https://github.com/Decentricity/marauder/myriaduninstall.sh
+sudo curl -o myriaduninstall.sh https://raw.githubusercontent.com/Decentricity/marauder/main/myriaduninstall.sh
 
 # Make the myriadrun.sh script executable
 sudo chmod +x myriaduninstall.sh
