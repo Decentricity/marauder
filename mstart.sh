@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd ~
 # Update package list
 sudo apt-get update
 
