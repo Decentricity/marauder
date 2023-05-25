@@ -7,7 +7,9 @@ echo "This script will guide you through the interactive process of setting up y
 
 # Interactive part of the script
 echo "Please enter the required information when prompted."
+echo "This is where you decide of your usernames and passwords (you do not need to set them up beforehand). "
 
+echo "The usernames and passwords you set-up in this file will be used by this script to install your Myriad Instance. Make sure you save them in a secure place."
 read -p "Enter API version (use 'latest' or a version from https://github.com/myriadsocial/myriad-api/releases without 'v'): " API_VERSION
 read -p "Enter your domain: " DOMAIN
 read -p "Enter your 12/24 word Substrate wallet mnemonic: " MYRIAD_ADMIN_SUBSTRATE_MNEMONIC
