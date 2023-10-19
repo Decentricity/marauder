@@ -1,4 +1,11 @@
-# InstallNvm.ps1
+function Refresh-Me {
+    $envVariables = Get-ChildItem -Path Env: | ForEach-Object { $_.Name }
+    foreach ($variable in $envVariables) {
+        Set-Variable -Name "env:$variable" -Value ([System.Environment]::GetEnvironmentVariable($variable)) -Scope Global
+    }
+
+    Write-Host "Environment Path refreshed."
+}
 
 # Ensure the script stops on any errors
 $ErrorActionPreference = "Stop"
@@ -24,6 +31,7 @@ if (-not (Get-Command nvm -ErrorAction SilentlyContinue)) {
     $nvmSetupPath = "D:\temp\nvm-setup.exe"
 
     # Download nvm-windows
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Invoke-WebRequest -Uri $nvmUrl -OutFile $nvmZipPath
 
     # Extract the setup file
@@ -31,15 +39,11 @@ if (-not (Get-Command nvm -ErrorAction SilentlyContinue)) {
 
     # Install nvm-windows
     Start-Process -FilePath $nvmSetupPath -Wait
-
-    # # Clean up downloaded and extracted files
-    # Remove-Item -Path $nvmZipPath
-    # Remove-Item -Path $nvmSetupPath
-
-    Write-Host "nvm-windows installation completed!"
 }
 
-# Ensure nvm command is available in the current session
-if (-not (Get-Command nvm -ErrorAction SilentlyContinue)) {
-    $env:Path += ";$env:USERPROFILE\AppData\Roaming\nvm"
-}
+Refresh-Me
+
+# Start the new PowerShell instance with the same script
+$scriptPath = ".\InstallNode.ps1"
+Start-Process -FilePath "powershell" -ArgumentList "-NoExit", "-ExecutionPolicy Bypass", "-File $scriptPath"
+Stop-Process -Id $PID

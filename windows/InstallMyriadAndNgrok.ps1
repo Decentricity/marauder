@@ -3,6 +3,15 @@
 # Ensure the script stops on any errors
 $ErrorActionPreference = "Stop"
 
+# Prompt the user for the Ngrok authentication token
+$ngrokAuthToken = Read-Host -Prompt "Enter your Ngrok authentication token"
+
+# Check if the token is null or empty
+if ([string]::IsNullOrEmpty($ngrokAuthToken)) {
+    Write-Error "The Ngrok authentication token was not provided. Exiting script."
+    exit
+}
+
 # Define the directory path
 $dataDirectoryPath = "D:\data"
 
@@ -30,15 +39,6 @@ $mongoDBBinPath = "C:\Program Files\MongoDB\Server\7.0\bin"  # Adjust the versio
 Start-Process -NoNewWindow -FilePath "$mongoDBBinPath\mongod.exe" -ArgumentList "--dbpath D:\data\db", "--bind_ip_all"
 
 Write-Host "MongoDB instance running with database 'myriad'"
-
-# Install Git
-$gitInstallerUrl = "https://github.com/git-for-windows/git/releases/download/v2.33.0.windows.2/Git-2.33.0.2-64-bit.exe"
-$gitInstallerPath = "D:\temp\git-installer.exe"
-
-Invoke-WebRequest -Uri $gitInstallerUrl -OutFile $gitInstallerPath
-Start-Process -FilePath $gitInstallerPath -ArgumentList "/VERYSILENT" -Wait
-
-Write-Host "Git installation completed!"
 
 # Create a 'myriad' directory and clone the repositories
 $myriadDirectory = "D:\myriad"
@@ -99,12 +99,13 @@ $ngrokZipPath = "D:\temp\ngrok.zip"
 $ngrokExtractPath = "D:\temp\ngrok"
 
 # Download ngrok
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Invoke-WebRequest -Uri $ngrokZipUrl -OutFile $ngrokZipPath
 
 # Extract ngrok
 Expand-Archive -Path $ngrokZipPath -DestinationPath $ngrokExtractPath
 
-Start-Process -NoNewWindow -FilePath "$ngrokExtractPath\ngrok.exe" -ArgumentList "authtoken *auth token*"
+Start-Process -NoNewWindow -FilePath "$ngrokExtractPath\ngrok.exe" -ArgumentList "authtoken $ngrokAuthToken"
 
 # Run ngrok (example: expose port 3000)
 Start-Job -ScriptBlock {
