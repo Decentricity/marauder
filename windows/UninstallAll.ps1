@@ -58,11 +58,16 @@ if ($answer -eq "Y") {
     $appsToUninstall = $programs | Where-Object { $_.DisplayName -match "Git" -or $_.DisplayName -match "nvm for windows" }
 
     foreach ($app in $appsToUninstall) {
-        Write-Host "Found $($app.DisplayName) with uninstall string: $($app.UninstallString)"
+        $answer = Read-Host "Found $($app.DisplayName) with uninstall string: $($app.UninstallString). Do you want the script to continue with the uninstallation? (Y/N)"
 
-        # Execute the uninstall command
-        if ($app.UninstallString) {
-            Start-Process -Wait -FilePath "cmd.exe" -ArgumentList "/c $($app.UninstallString)"
+        # Check the answer
+        if ($answer -eq "Y") {
+            # Execute the uninstall command
+            if ($app.UninstallString) {
+                Start-Process -Wait -FilePath "cmd.exe" -ArgumentList "/c $($app.UninstallString)"
+            }
+        } else {
+            Write-Host "Uninstallation skipped."
         }
     }
 } else {
