@@ -3,6 +3,52 @@
 # Ensure the script stops on any errors
 $ErrorActionPreference = "Stop"
 
+# Check if npm is already installed
+if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
+    # Notify the user
+    Write-Host "npm is not installed on this system." -ForegroundColor Red
+
+    # Exit the PowerShell process
+    exit
+}
+
+# Check if nvm is already installed
+if (-not (Get-Command nvm -ErrorAction SilentlyContinue)) {
+    # Notify the user
+    Write-Host "nvm is not installed on this system." -ForegroundColor Red
+
+    # Exit the PowerShell process
+    exit
+}
+
+# Check if yarn is already installed
+if (-not (Get-Command yarn -ErrorAction SilentlyContinue)) {
+    # Notify the user
+    Write-Host "yarn is not installed on this system." -ForegroundColor Red
+
+    # Exit the PowerShell process
+    exit
+}
+
+# Check if git is already installed
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    # Notify the user
+    Write-Host "git is not installed on this system." -ForegroundColor Red
+
+    # Exit the PowerShell process
+    exit
+}
+
+$mongoDBBinPath = "C:\Program Files\MongoDB\Server\7.0\bin"  # Adjust the version number if needed
+
+if (-not (Test-Path $mongoDBBinPath)) {
+    # Notify the user
+    Write-Host "MongoDB is not installed on this system." -ForegroundColor Red
+
+    # Exit the PowerShell process
+    exit
+}
+
 # Prompt the user for the Ngrok authentication token
 $ngrokAuthToken = Read-Host -Prompt "Enter your Ngrok authentication token"
 
@@ -53,11 +99,16 @@ if (-not (Test-Path $myriadDirectory)) {
 
 Set-Location -Path $myriadDirectory
 
-# Clone the repositories
-git clone https://github.com/myriadsocial/myriad-api.git
-git clone https://github.com/myriadsocial/myriad-web.git
+$myriadApi = "D:\myriad\myriad-api"
+$myriadWeb = "D:\myriad\myriad-web"
 
-Write-Host "Repositories cloned successfully in the 'myriad' directory!"
+if (-not (Test-Path $myriadApi) -or -not (Test-Path $myriadWeb)) {
+    # Clone the repositories
+    git clone https://github.com/myriadsocial/myriad-api.git
+    git clone https://github.com/myriadsocial/myriad-web.git
+
+    Write-Host "Repositories cloned successfully in the 'myriad' directory!"
+}
 
 # Navigate to your project directory (replace with your actual path)
 $projectPath = "D:\myriad\myriad-api"
@@ -82,7 +133,7 @@ cd $projectPath
 
 # Install dependencies as per your project's requirements
 yarn install --frozen-lockfile --ignore-engines --network-timeout 100000
-# yarn build
+yarn build
 
 Start-Job -ScriptBlock {
     Set-Location "D:\myriad\myriad-web"
@@ -98,12 +149,14 @@ $ngrokZipUrl = "https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.
 $ngrokZipPath = "D:\temp\ngrok.zip"
 $ngrokExtractPath = "D:\temp\ngrok"
 
-# Download ngrok
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Invoke-WebRequest -Uri $ngrokZipUrl -OutFile $ngrokZipPath
+if (-not (Test-Path $ngrokZipPath) -or -not (Test-Path $ngrokExtractPath)) {
+    # Download ngrok
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-WebRequest -Uri $ngrokZipUrl -OutFile $ngrokZipPath
 
-# Extract ngrok
-Expand-Archive -Path $ngrokZipPath -DestinationPath $ngrokExtractPath
+    # Extract ngrok
+    Expand-Archive -Path $ngrokZipPath -DestinationPath $ngrokExtractPath
+}
 
 Start-Process -NoNewWindow -FilePath "$ngrokExtractPath\ngrok.exe" -ArgumentList "authtoken $ngrokAuthToken"
 

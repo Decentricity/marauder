@@ -19,8 +19,10 @@ if (-not (Test-Path $mongoDBBinPath)) {
     $installerUrl = "https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-$mongoDbVersion-signed.msi"
     $installerPath = "D:\temp\mongodb-installer.msi"
 
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
+    if (-not (Test-Path $installerPath)) {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
+    }
     Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $installerPath" -Wait
 
     Write-Host "MongoDB installation completed!"

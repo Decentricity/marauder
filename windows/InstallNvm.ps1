@@ -30,15 +30,18 @@ if (-not (Get-Command nvm -ErrorAction SilentlyContinue)) {
     $nvmZipPath = "D:\temp\nvm-setup.zip"
     $nvmSetupPath = "D:\temp\nvm-setup.exe"
 
-    # Download nvm-windows
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest -Uri $nvmUrl -OutFile $nvmZipPath
+    if (-not (Test-Path $nvmZipPath) -or -not (Test-Path $nvmSetupPath)) {
+        # Download nvm-windows
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -Uri $nvmUrl -OutFile $nvmZipPath
 
-    # Extract the setup file
-    Expand-Archive -Path $nvmZipPath -DestinationPath "D:\temp"
+        # Extract the setup file
+        Expand-Archive -Path $nvmZipPath -DestinationPath "D:\temp"
+    }
 
     # Install nvm-windows
     Start-Process -FilePath $nvmSetupPath -Wait
+    
 }
 
 Refresh-Me
