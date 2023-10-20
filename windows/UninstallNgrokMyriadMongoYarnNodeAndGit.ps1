@@ -11,6 +11,8 @@ Get-Job | Remove-Job
 $ngrokDirectory = "D:\temp\ngrok"
 $ngrokZipDirectory = "D:\temp\ngrok.zip"
 if (Test-Path $ngrokDirectory) {
+    Stop-Process -Name "ngrok" -Force
+    
     Remove-Item -Path $ngrokDirectory -Recurse -Force
     Remove-Item -Path $ngrokZipDirectory
     Write-Host "ngrok directory and repositories removed successfully!"
@@ -34,20 +36,38 @@ Write-Host "MongoDB uninstallation initiated. Depending on your system, MongoDB 
 npm uninstall -g yarn
 Write-Host "Yarn global uninstallation completed!"
 
-# Check if nvm is available
-if (Get-Command nvm -ErrorAction SilentlyContinue) {
-    # Uninstall Node.js version
-    $nvmVersion = "14.17"
-    nvm uninstall $nvmVersion
+# Prompt the user
+$answer = Read-Host "Do you want the script to access the registry and uninstall Git & NVM for you? (Y/N)"
 
-    Write-Host "Node.js version $nvmVersion uninstallation completed!"
+# Check the answer
+if ($answer -eq "Y") {
+    $programs = @()
 
-    # Note: Uninstalling `nvm-windows` itself requires manual removal due to the design of `nvm-windows`.
-    Write-Host "To fully uninstall nvm-windows, please manually delete the nvm directory (typically located in D:\Users\YourUsername\AppData\Roaming\nvm) and remove NVM_HOME & NVM_SYMLINK environment variables."
+    # Check both 32-bit and 64-bit registry paths for uninstallers
+    $registryPaths = @(
+        "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall",
+        "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+    )
+
+    foreach ($path in $registryPaths) {
+        $programs += Get-ChildItem -Path $path | 
+                    ForEach-Object { Get-ItemProperty -Path $_.PsPath }
+    }
+
+    # Filter out Git and NVM
+    $appsToUninstall = $programs | Where-Object { $_.DisplayName -match "Git" -or $_.DisplayName -match "nvm for windows" }
+
+    foreach ($app in $appsToUninstall) {
+        Write-Host "Found $($app.DisplayName) with uninstall string: $($app.UninstallString)"
+
+        # Execute the uninstall command
+        if ($app.UninstallString) {
+            Start-Process -Wait -FilePath "cmd.exe" -ArgumentList "/c $($app.UninstallString)"
+        }
+    }
+} else {
+    Write-Host "Git and NVM uninstallation skipped."
+    exit
 }
 
-# Uninstall Git
-# The next lines guide the user to do it as there isn't a universal silent un-installation method.
-Write-Host "To uninstall Git, please go to 'Add or Remove Programs' in Windows, find 'Git', and choose to uninstall."
-
-Write-Host "Uninstallation script completed!"
+Write-Host "Uninstallation process initiated."

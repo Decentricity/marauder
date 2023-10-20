@@ -36,7 +36,7 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Invoke-WebRequest -Uri $gitInstallerUrl -OutFile $gitInstallerPath
-    Start-Process -FilePath $gitInstallerPath -ArgumentList "/VERYSILENT" -Wait
+    Start-Process -FilePath $gitInstallerPath -Wait
 
     Write-Host "Git installation completed!"
 
