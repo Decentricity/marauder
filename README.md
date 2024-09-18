@@ -21,7 +21,7 @@ chmod +x ./marauder.sh
 ./marauder.sh
 ```
 
-These commands downloads and executes the `marauder.sh` script.
+These commands download and execute the `marauder.sh` script.
 
 ## What the Script Does
 
@@ -44,6 +44,7 @@ The `marauder.sh` script performs the following actions:
 ## Script Components
 
 - `marauder.sh`: The main script that orchestrates the entire setup process
+- `marauder_uninstall.sh`: Script to uninstall Marauder components (see Uninstallation section)
 
 ## User Interaction
 
@@ -56,6 +57,22 @@ If any script fails during execution, the user will be prompted to decide whethe
 ## Post-Installation
 
 After successful completion, the script will display a message indicating that the Myriad setup has been completed.
+
+## Uninstallation
+
+To uninstall Marauder and its components, use the following commands:
+
+```bash
+wget --no-cache https://raw.githubusercontent.com/Decentricity/marauder/main/marauder_uninstall.sh
+chmod +x ./marauder_uninstall.sh
+./marauder_uninstall.sh
+```
+
+The uninstall script will remove all Marauder-related components, including Docker containers, images, and downloaded files. It will also disable and remove zrok, and remove the Myriad service.
+
+## Windows Installation
+
+A Windows installer for Marauder is currently in development. The scripts for this installer can be found in the `windows` directory. Please note that this is a work in progress and may not be fully functional yet.
 
 ## Support
 
